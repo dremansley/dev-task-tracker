@@ -8,4 +8,4 @@ class Sprint(models.Model):
     tasks = models.ManyToManyField(to="tasks.Task", related_name="sprints")
 
     def __str__(self):
-        return f"{self.name} - {self.project.name}"
+        return f"{self.name} - {self.project.title}"
