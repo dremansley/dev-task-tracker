@@ -26,11 +26,19 @@ class Task(models.Model):
         choices=Status.choices,
         default=Status.TO_DO
     )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="tasks_created"
+    )
     assigned_to = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
+        related_name="tasks_assigned"
     )
     project = models.ForeignKey(
         'projects.Project',
