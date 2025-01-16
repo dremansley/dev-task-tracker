@@ -15,7 +15,7 @@ class Task(models.Model):
         DONE = "DONE", "Done"
 
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
     priority = models.CharField(
         max_length=6,
         choices=Priority.choices,

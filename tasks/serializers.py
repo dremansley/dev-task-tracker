@@ -10,3 +10,8 @@ class ChoiceSerializer(serializers.Serializer):
             'value': instance[0],
             'display_name': instance[1]
         }
+    
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = "__all__"

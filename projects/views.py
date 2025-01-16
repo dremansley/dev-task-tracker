@@ -24,7 +24,7 @@ class ProjectCreateView(UserGroupPermissionMixin, APIView):
 
         if serialize_input.is_valid():
             project = serialize_input.save()
-            return Response({"message": f"Created Project {project.title} Successfully"}, status=201)
+            return Response({"message": f"Created Project '{project.title}' Successfully"}, status=201)
         
         return Response({"message": "Invalid Data", "status":"error", "errors": serialize_input.errors}, status=400)
     
