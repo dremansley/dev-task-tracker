@@ -38,7 +38,7 @@ DJANGO_APPS = ['django.contrib.admin',
                    'django.contrib.messages',
                    'django.contrib.staticfiles',]
 
-LOCAL_APPS = ["projects", "sprints", "tasks", "teams"]
+LOCAL_APPS = ["projects", "sprints", "tasks", "teams", "users"]
 
 THIRD_PARTY_APPS = [
     'rest_framework',
