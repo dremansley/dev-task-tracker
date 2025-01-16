@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from tasks.models import Task
+from django.contrib.auth.models import User
 
 class ChoiceSerializer(serializers.Serializer):
     value = serializers.CharField()
@@ -11,7 +12,14 @@ class ChoiceSerializer(serializers.Serializer):
             'display_name': instance[1]
         }
     
-class TaskSerializer(serializers.ModelSerializer):
+class TaskModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = "__all__"
+
+class TaskSerializer(serializers.Serializer):
+    # user = UserSerializer() 
+
     class Meta:
         model = Task
         fields = "__all__"
