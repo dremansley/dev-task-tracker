@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from users.models import CustomUser
 from django.utils import timezone
 
 class Task(models.Model):
@@ -33,14 +33,14 @@ class Task(models.Model):
         default=TaskStatus.TO_DO
     )
     created_by = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="tasks_created"
     )
     assigned_to = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
