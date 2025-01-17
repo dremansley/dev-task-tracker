@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from utils.mixins import UserGroupPermissionMixin
 from projects.models import Project
 from .serializers import ProjectSerializer
-
+from tasks.models import Task
+from tasks.serializers import TaskSerializer
 
 class ProjectListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
@@ -78,4 +79,17 @@ class ProjectDeleteView(UserGroupPermissionMixin, APIView):
                 )
 
 
-        
+class ProjectTaskListView(UserGroupPermissionMixin, APIView):
+    required_groups = ["Project Admin", "Developer", "Viewer"]
+
+    def get(self, request, *args, **kwargs):
+        try:
+            project = Project.objects.get(pk=int(kwargs.get("project_id")))
+        except Project.DoesNotExist:
+            return Response({"message": "Project does not exist", "status":"error"}, status=404)
+    
+        tasks = Task.objects.filter(project=project)
+        serializer = TaskSerializer(tasks, many=True)
+
+        return Response({"tasks": serializer.data}, status=200)
+    

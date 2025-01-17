@@ -5,7 +5,6 @@ from tasks.serializers import ChoiceSerializer
 from rest_framework.response import Response
 from tasks.serializers import TaskModelSerializer, TaskSerializer
 from django.shortcuts import get_object_or_404
-from projects.models import Project
 
 class PriorityListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
@@ -40,22 +39,6 @@ class TaskDetailView(UserGroupPermissionMixin, APIView):
         serializer = TaskSerializer(task, many=False)
         return Response({"task": serializer.data}, status=200)
 
-
-class TaskListView(UserGroupPermissionMixin, APIView):
-    required_groups = ["Project Admin", "Developer", "Viewer"]
-
-    def get(self, request, *args, **kwargs):
-        try:
-            print(f"Project ID: {kwargs.get('project_id')}")
-            project = Project.objects.get(pk=int(kwargs.get("project_id")))
-        except Project.DoesNotExist:
-            return Response({"message": "Project does not exist", "status":"error"}, status=404)
-    
-        tasks = Task.objects.filter(project=project)
-        serializer = TaskSerializer(tasks, many=True)
-
-        return Response({"tasks": serializer.data}, status=200)
-    
 
 class TaskCreateView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer"]
