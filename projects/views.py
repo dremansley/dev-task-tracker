@@ -11,7 +11,8 @@ class ProjectListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
 
     def get(self, request, *args, **kwargs):
-        projects = Project.objects.filter(is_deleted=False)
+
+        projects = request.user.user_projects()
         serialized = ProjectSerializer(projects, many=True)
 
         return Response({"projects": serialized.data, "status":"success"}, status=200)
@@ -21,6 +22,7 @@ class ProjectCreateView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin"]
 
     def post(self, request, *args, **kwargs):
+        
         serialize_input = ProjectSerializer(data=request.data)
 
         if serialize_input.is_valid():
@@ -34,24 +36,30 @@ class ProjectUpdateView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin"]
 
     def patch(self, request, *args, **kwargs):
-  
+
+        user_projects = request.user.user_projects()
         project = get_object_or_404(Project, pk=kwargs.get("project_id"), is_deleted=False)
 
-        serializer = ProjectSerializer(project, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "message": "Project updated successfully",
-                    "data": serializer.data,
-                    "status": "success",
-                },
-                status=200,
-            )
+        if project in user_projects:
+            serializer = ProjectSerializer(project, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {
+                        "message": "Project updated successfully",
+                        "data": serializer.data,
+                        "status": "success",
+                    },
+                    status=200,
+                )
 
+            return Response(
+                {"message": "Invalid data", "errors": serializer.errors, "status": "error"},
+                status=400,
+            )
         return Response(
-            {"message": "Invalid data", "errors": serializer.errors, "status": "error"},
-            status=400,
+            {"message": "You do not have permission to edit this project", "status": "error"},
+            status=403,
         )
     
         
@@ -62,34 +70,38 @@ class ProjectDeleteView(UserGroupPermissionMixin, APIView):
 
         project = get_object_or_404(Project, pk=kwargs.get("project_id"), is_deleted=False)
 
-        if project.project_lead == request.user or request.user.is_superuser:
-
-            project.is_deleted = True
-            project.is_active = False
-            project.save()
-
+        if project.project_lead != request.user and not request.user.is_superuser:
             return Response(
-                    {"message": "Project has been deleted", "status": "success"},
-                    status=200,
-                )
-        
-        return Response(
-                    {"message": "Only the project leader can delete this project", "status": "success"},
-                    status=400,
+                    {"message": "Only the project leader or superuser can delete this project", "status": "error"},
+                    status=403,
                 )
 
+        project.is_deleted = True
+        project.is_active = False
+        project.save()
+
+        return Response(
+                {"message": "Project has been marked as deleted", "status": "success"},
+                status=200,
+            )
+        
 
 class ProjectTaskListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
 
     def get(self, request, *args, **kwargs):
-        try:
-            project = Project.objects.get(pk=int(kwargs.get("project_id")))
-        except Project.DoesNotExist:
-            return Response({"message": "Project does not exist", "status":"error"}, status=404)
-    
+
+        user_projects = request.user.user_projects()
+        project = get_object_or_404(Project, pk=kwargs.get("project_id"), is_deleted=False)
+   
+        if project not in user_projects:
+            return Response(
+            {"message": "You do not have permission to view this project", "status": "error"},
+            status=403
+            )
+        
         tasks = Task.objects.filter(project=project)
         serializer = TaskSerializer(tasks, many=True)
-
         return Response({"tasks": serializer.data}, status=200)
-    
+        
+       

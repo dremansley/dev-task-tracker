@@ -5,6 +5,9 @@ from tasks.serializers import ChoiceSerializer
 from rest_framework.response import Response
 from tasks.serializers import TaskModelSerializer, TaskSerializer
 from django.shortcuts import get_object_or_404
+from utils.funcs import validate_and_return
+from projects.models import Project
+
 
 class PriorityListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
@@ -32,13 +35,19 @@ class TaskDetailView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
 
     def get(self, request, *args, **kwargs):
+
+        user_projects = request.user.user_projects()
+
         task_id = kwargs.get("task_id")
         task = get_object_or_404(Task, pk=task_id)
 
-        #TODO: Check if the user has permission to vuew this task via project access
-        serializer = TaskSerializer(task, many=False)
-        return Response({"task": serializer.data}, status=200)
-
+        if task.project in user_projects:
+            serializer = TaskSerializer(task, many=False)
+            return Response({"task": serializer.data, "status":"success"}, status=200)
+        return Response(
+            {"message": "You do not have permission to view this task", "status": "error"},
+            status=403,
+        )
 
 class TaskCreateView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer"]
@@ -46,14 +55,43 @@ class TaskCreateView(UserGroupPermissionMixin, APIView):
     def post(self, request, *args, **kwargs):
 
         request_data = request.data.copy()
-        request_data['created_by'] = request.user.id
+        user_projects = request.user.user_projects()
 
-        serialize_input = TaskModelSerializer(data=request_data)
+        project_id = request_data.get("project")
 
-        if serialize_input.is_valid():
-            task = serialize_input.save()
-            return Response({"message": f"Created Task '{task.title}' Successfully"}, status=201)
+        if not project_id:
+            return Response(
+                {"message": "Project is required", "status": "error"},
+                status=400
+            )
         
-        return Response({"message": "Invalid Data", "status":"error", "errors": serialize_input.errors}, status=400)
-    
+        project = get_object_or_404(Project, pk=project_id)
+        
+        if project not in user_projects:
+            return Response(
+                {"message": "You do not have permission to create a task for this project", "status": "error"},
+                status=403
+            )
+       
+        request_data['created_by'] = request.user.id
+        serialize_input = TaskModelSerializer(data=request_data)
+        return validate_and_return(serialize_input, f"Created Task Successfully")
+
+
+class TaskUpdateView(UserGroupPermissionMixin, APIView):
+    required_groups = ["Project Admin", "Developer"]
+
+    def patch(self, request, *args, **kwargs):
+
+        user_projects = request.user.user_projects()
+        task = get_object_or_404(Task, pk=kwargs.get("task_id"))
+
+        if task.project not in user_projects:
+            return Response(
+                {"message": "You do not have permission to modify this task", "status": "error"},
+                status=403
+            )
+
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+        return validate_and_return(serializer, "Task updated successfully")
         

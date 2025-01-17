@@ -25,7 +25,6 @@ class TaskSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(choices=Task.TaskStatus)
     priority = serializers.ChoiceField(choices=Task.TaskPriority)
     type = serializers.ChoiceField(choices=Task.TaskType)
-    # project = ProjectSerializer()
     task_completion_time = serializers.SerializerMethodField()
     is_overdue = serializers.SerializerMethodField()
     completion_date = serializers.SerializerMethodField()
