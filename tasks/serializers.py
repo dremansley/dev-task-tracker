@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from tasks.models import Task
-from users.serializers import UserSerializer
+from users.serializers import UserNameSerializer
 
 class ChoiceSerializer(serializers.Serializer):
     value = serializers.CharField()
@@ -17,17 +17,52 @@ class TaskModelSerializer(serializers.ModelSerializer):
         model = Task
         fields = "__all__"
 
-class TaskSerializer(serializers.Serializer):
-    user = UserSerializer()
+
+class TaskSerializer(serializers.ModelSerializer):
+
+    created_by = UserNameSerializer()
+    assigned_to = UserNameSerializer()
+    status = serializers.ChoiceField(choices=Task.TaskStatus)
+    priority = serializers.ChoiceField(choices=Task.TaskPriority)
+    type = serializers.ChoiceField(choices=Task.TaskType)
+    # project = ProjectSerializer()
+    task_completion_time = serializers.SerializerMethodField()
+    is_overdue = serializers.SerializerMethodField()
+    completion_date = serializers.SerializerMethodField()
+
+    def get_task_completion_time(self, obj):
+        return obj.task_completion_time().total_seconds()
+    
+    def get_is_overdue(self, obj):
+        return obj.is_overdue
+    
+    def get_completion_date(self, obj):
+        return obj.completion_date
 
     class Meta:
         model = Task
-        fields = "__all__"
+        fields = ("id",
+                  "title", 
+                  "description",
+                  "priority",
+                  "status",
+                  "type",
+                  "created_by",
+                  "assigned_to",
+                  "project",
+                  "created_at",
+                  "updated_at",
+                  "due_date",
+                  "completion_date",
+                  "task_completion_time",
+                  "is_overdue"
+                  )
 
 
 class TaskPreviewSerializer(serializers.Serializer):
 
     status = serializers.SerializerMethodField()
+
     priority = serializers.SerializerMethodField()
 
     class Meta:

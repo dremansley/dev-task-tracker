@@ -5,21 +5,28 @@ from tasks.serializers import ChoiceSerializer
 from rest_framework.response import Response
 from tasks.serializers import TaskModelSerializer, TaskSerializer
 from django.shortcuts import get_object_or_404
+from projects.models import Project
 
 class PriorityListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
 
     def get(self, request, *args, **kwargs):
-        priority_list = ChoiceSerializer(Task.Priority.choices, many=True)
+        priority_list = ChoiceSerializer(Task.TaskPriority.choices, many=True)
         return Response({"priority_list": priority_list.data, "status": "success"}, status=200)
     
-
 class TaskStatusListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
 
     def get(self, request, *args, **kwargs):
-        status_options_list = ChoiceSerializer(Task.Status.choices, many=True)
+        status_options_list = ChoiceSerializer(Task.TaskStatus.choices, many=True)
         return Response({"status_list": status_options_list.data, "status": "success"}, status=200)
+    
+class TaskTypeListView(UserGroupPermissionMixin, APIView):
+    required_groups = ["Project Admin", "Developer", "Viewer"]
+
+    def get(self, request, *args, **kwargs):
+        type_options_list = ChoiceSerializer(Task.TaskType.choices, many=True)
+        return Response({"type_list": type_options_list.data, "status": "success"}, status=200)
     
 
 class TaskDetailView(UserGroupPermissionMixin, APIView):
@@ -38,8 +45,13 @@ class TaskListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
 
     def get(self, request, *args, **kwargs):
-
-        tasks = Task.objects.filter(project=kwargs.get("project_id"))
+        try:
+            print(f"Project ID: {kwargs.get('project_id')}")
+            project = Project.objects.get(pk=int(kwargs.get("project_id")))
+        except Project.DoesNotExist:
+            return Response({"message": "Project does not exist", "status":"error"}, status=404)
+    
+        tasks = Task.objects.filter(project=project)
         serializer = TaskSerializer(tasks, many=True)
 
         return Response({"tasks": serializer.data}, status=200)
