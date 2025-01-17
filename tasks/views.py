@@ -12,7 +12,7 @@ class PriorityListView(UserGroupPermissionMixin, APIView):
     def get(self, request, *args, **kwargs):
         priority_list = ChoiceSerializer(Task.Priority.choices, many=True)
         return Response({"priority_list": priority_list.data, "status": "success"}, status=200)
-
+    
 
 class TaskStatusListView(UserGroupPermissionMixin, APIView):
     required_groups = ["Project Admin", "Developer", "Viewer"]
@@ -28,7 +28,7 @@ class TaskDetailView(UserGroupPermissionMixin, APIView):
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get("task_id")
         task = get_object_or_404(Task, pk=task_id)
-        
+
         #TODO: Check if the user has permission to vuew this task via project access
         serializer = TaskSerializer(task, many=False)
         return Response({"task": serializer.data}, status=200)
@@ -60,4 +60,5 @@ class TaskCreateView(UserGroupPermissionMixin, APIView):
             return Response({"message": f"Created Task '{task.title}' Successfully"}, status=201)
         
         return Response({"message": "Invalid Data", "status":"error", "errors": serialize_input.errors}, status=400)
+    
         
