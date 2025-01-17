@@ -1,6 +1,8 @@
 from django.db import models
-from users.models import CustomUser
+from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+CustomUser = get_user_model()
 
 class Task(models.Model):
 

@@ -1,5 +1,7 @@
 from django.db import models
-from users.models import CustomUser
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
