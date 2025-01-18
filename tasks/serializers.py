@@ -61,7 +61,6 @@ class TaskSerializer(serializers.ModelSerializer):
 class TaskPreviewSerializer(serializers.Serializer):
 
     status = serializers.SerializerMethodField()
-
     priority = serializers.SerializerMethodField()
 
     class Meta:

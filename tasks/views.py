@@ -94,4 +94,6 @@ class TaskUpdateView(UserGroupPermissionMixin, APIView):
 
         serializer = TaskSerializer(task, data=request.data, partial=True)
         return validate_and_return(serializer, "Task updated successfully")
-        
+
+
+# TODO: TASK DELETE VIEW
