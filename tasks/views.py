@@ -39,7 +39,7 @@ class TaskDetailView(UserGroupPermissionMixin, APIView):
         user_projects = request.user.user_projects()
 
         task_id = kwargs.get("task_id")
-        task = get_object_or_404(Task, pk=task_id)
+        task = get_object_or_404(Task, pk=task_id, is_deleted=False)
 
         if task.project in user_projects:
             serializer = TaskSerializer(task, many=False)
@@ -84,7 +84,7 @@ class TaskUpdateView(UserGroupPermissionMixin, APIView):
     def patch(self, request, *args, **kwargs):
 
         user_projects = request.user.user_projects()
-        task = get_object_or_404(Task, pk=kwargs.get("task_id"))
+        task = get_object_or_404(Task, pk=kwargs.get("task_id"), is_deleted=False)
 
         if task.project not in user_projects:
             return Response(
@@ -96,4 +96,17 @@ class TaskUpdateView(UserGroupPermissionMixin, APIView):
         return validate_and_return(serializer, "Task updated successfully")
 
 
-# TODO: TASK DELETE VIEW
+class TaskDeleteView(UserGroupPermissionMixin, APIView):
+    required_groups = ["Project Admin", "Developer"]
+
+    def patch(self, request, *args, **kwargs):
+
+        task = get_object_or_404(Task, pk=kwargs.get("task_id"), is_deleted=False)
+        task.is_deleted = True
+        task.save()
+
+        return Response(
+                {"message": "Task has been deleted", "status": "success"},
+                status=200,
+            )
+

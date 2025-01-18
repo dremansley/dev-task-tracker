@@ -66,6 +66,7 @@ class Task(models.Model):
         null=True,
         blank=True
         )
+    is_deleted = models.BooleanField(default=False)
     
     @property
     def is_overdue(self):
