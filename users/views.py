@@ -1,10 +1,9 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
-from utils.mixins import UserGroupPermissionMixin
 from rest_framework.response import Response
+from users.serializers import UserSerializer
 
-class UserDetail(UserGroupPermissionMixin, APIView):
-    required_groups = ["Project Admin", "Developer", "Viewer"]
+class UserDetail(APIView):
 
     def get(self, request, *args, **kwargs):
-        return Response({"message": "User DEtails"})
+        serializer = UserSerializer(request.user, many=False)
+        return Response({"user":serializer.data})

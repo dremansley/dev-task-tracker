@@ -4,8 +4,14 @@ from django.contrib.auth import get_user_model
 CustomUser = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
-    model = CustomUser
-    fields = "__all__"
+    roles = serializers.SerializerMethodField()
+
+    def get_roles(self, obj):
+        return obj.groups.values_list("name", flat=True)
+
+    class Meta:
+        model = CustomUser
+        fields = ("username", "first_name", "last_name", "email", "is_superuser", "roles")
     
 
 class UserNameSerializer(serializers.ModelSerializer):
