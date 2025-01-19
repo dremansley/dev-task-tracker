@@ -48,7 +48,6 @@ THIRD_PARTY_APPS = [
 INSTALLED_APPS = [*DJANGO_APPS, *THIRD_PARTY_APPS, *LOCAL_APPS]
 
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -144,8 +143,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://domain.com",
+    "http://localhost:5173",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -153,9 +151,23 @@ CORS_ALLOW_CREDENTIALS = True
 AUTH_USER_MODEL = 'users.CustomUser'
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
 }
 
 LOGIN_REDIRECT_URL=os.getenv('FRONT_END_URL')
+LOGIN_URL = '/accounts/login/'
+
+SESSION_COOKIE_NAME = 'dtt-sessionid'
+SESSION_COOKIE_HTTPONLY = True # Cannot be accessed via Javscript on front-end
+SESSION_COOKIE_SECURE = True # Cookie only sent via HTTPS
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
+CSRF_TRUSTED_ORIGINS = [os.getenv('FRONT_END_URL')]
