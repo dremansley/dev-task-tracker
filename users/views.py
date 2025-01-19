@@ -12,6 +12,4 @@ class UserDetail(APIView):
 class AuthCheck(APIView):
 
     def get(self, request, *args, **kwargs):
-        return Response({"data": {
-            "is_authenticated": True,
-        }})
+        return Response({"is_authenticated": True})
