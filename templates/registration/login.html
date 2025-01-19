@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+    .login-background {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='100%' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1003%26quot%3b)' fill='none'%3e%3crect width='1440' height='560' x='0' y='0' fill='rgba(239%2c 238%2c 238%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c425.597C77.873%2c417.58%2c132.778%2c350.729%2c194.239%2c302.242C249.701%2c258.487%2c304.173%2c215.905%2c341.682%2c156.041C383.398%2c89.464%2c423.333%2c17.931%2c421.597%2c-60.617C419.763%2c-143.628%2c395.844%2c-234.634%2c331.88%2c-287.575C269.281%2c-339.386%2c177.968%2c-327.079%2c96.745%2c-329.483C33.093%2c-331.367%2c-24.604%2c-304.97%2c-88.09%2c-300.007C-173.812%2c-293.306%2c-275.439%2c-351.18%2c-340.773%2c-295.281C-403.794%2c-241.362%2c-386.411%2c-136.238%2c-375.616%2c-54.005C-366.527%2c15.232%2c-310.048%2c64.966%2c-284.928%2c130.122C-257.509%2c201.242%2c-274.67%2c290.2%2c-221.761%2c345.067C-166.043%2c402.848%2c-79.847%2c433.817%2c0%2c425.597' fill='%23c1bdbd'%3e%3c/path%3e%3cpath d='M1440 947.828C1518.433 959.357 1601.726 957.9 1671.339 919.97 1743.188 880.822 1806.655 816.0350000000001 1827.229 736.842 1846.973 660.844 1782.747 589.823 1777.463 511.48 1771.527 423.46299999999997 1835.884 330.70500000000004 1794.58 252.755 1752.871 174.04000000000002 1655.0720000000001 143.724 1569.492 118.98899999999998 1484.171 94.32900000000001 1388.155 72.92500000000001 1308.537 112.27800000000002 1231.187 150.51 1209.0430000000001 246.99400000000003 1162.9470000000001 319.932 1124.404 380.919 1086.143 438.096 1060.103 505.379 1027.0720000000001 590.725 947.451 684.531 990.6089999999999 765.23 1034.589 847.4639999999999 1162.2 822.725 1248.596 857.8299999999999 1315.263 884.918 1368.805 937.363 1440 947.828' fill='white'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1003'%3e%3crect width='1440' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    </style>
+
+</head>
+
+<body>
+    <div class="bg-gray-100 flex flex-col justify-center items-center h-screen login-background">
+        <h1 class="text-4xl font-extrabold text-center mb-4 text-[#0652DD] mb-8">Dev Task Tracker</h1>
+        <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h1 class="text-xl font-extrabold mb-4 text-center mb-4">Account Login</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" placeholder="Enter your username" name="username" id="id_username" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm pt-2 pb-2 pl-2">
+                </div>
+                <div class="mb-4">
+                    <label for="id_password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" placeholder="Enter your password" name="password" id="id_password" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm pt-2 pb-2 pl-2">
+                </div>
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded w-full">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
